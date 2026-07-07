@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meital Geva | Science · Technology · Design</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Roboto+Condensed:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        @font-face {
+            font-family: "Glock Grotesk";
+            src: url("fonts/glockgrotesque-medium.otf") format("opentype");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --bg: #fbfbf8;
+            --ink: #0a0a09;
+            --muted: rgba(10, 10, 9, 0.54);
+            --faint: rgba(10, 10, 9, 0.09);
+            --hairline: rgba(10, 10, 9, 0.14);
+            --paper: #f6f6f1;
+            --field: rgba(10, 10, 9, 0.035);
+            --mono: 'JetBrains Mono', monospace;
+            --condensed: 'Roboto Condensed', 'Helvetica Neue Condensed', 'Arial Narrow', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background:
+                radial-gradient(circle at 73% 18%, rgba(0,0,0,0.045), transparent 27vw),
+                linear-gradient(90deg, rgba(0,0,0,0.028) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(0,0,0,0.022) 1px, transparent 1px),
+                var(--bg);
+            background-size: auto, 72px 72px, 72px 72px, auto;
+            color: var(--ink);
+            font-family: var(--condensed);
+            font-weight: 400;
+            overflow-x: hidden;
+            position: relative;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: .32;
+            background-image:
+                linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)),
+                repeating-radial-gradient(circle at 50% 50%, rgba(0,0,0,.08) 0 1px, transparent 1px 3px);
+            mix-blend-mode: multiply;
+        }
+
+        .interface-grid {
+            position: relative;
+            z-index: 2;
+            width: min(100%, 1280px);
+            margin: 0 auto;
+            padding: 54px 42px 0;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(100%, 1280px);
+            padding: 20px 42px 16px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            z-index: 30;
+            pointer-events: none;
+            background: rgba(251, 251, 248, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(10,10,9,.16);
+            box-shadow: 0 10px 30px rgba(0,0,0,.035);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            left: 42px;
+            right: 42px;
+            bottom: -1px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(10,10,9,.18), transparent 58%);
+        }
+
+        header > * { pointer-events: auto; }
+
+        .meta-label {
+            font-family: var(--mono);
+            font-size: 10px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: .085em;
+            color: var(--ink);
+            font-weight: 400;
+        }
+
+        header a {
+            font-family: var(--mono) !important;
+            font-size: 11px !important;
+            letter-spacing: .02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--ink);
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 400;
+            transition: opacity .25s ease, filter .25s ease;
+        }
+
+        .nav-links a:hover { opacity: .45; filter: blur(.35px); }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 150px 0;
+            border-bottom: 1px solid var(--hairline);
+            position: relative;
+            scroll-margin-top: 96px;
+        }
+
+
+        .reveal-element {
+            filter: blur(18px);
+            opacity: 0;
+            transform: translateY(18px);
+            transition: filter 1.9s cubic-bezier(.16, 1, .3, 1), opacity 1.9s cubic-bezier(.16, 1, .3, 1), transform 1.9s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        .reveal-element.visible { filter: blur(0); opacity: 1; transform: translateY(0); }
+
+        #hero {
+            min-height: 100vh;
+            isolation: isolate;
+            display: block;
+        }
+
+        .hero-panel {
+            position: relative;
+            min-height: min(76vh, 860px);
+            display: flex;
+            align-items: stretch;
+            border-top: 1px solid rgba(0,0,0,.10);
+            border-bottom: 1px solid rgba(0,0,0,.10);
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.08));
+        }
+
+        .hero-dot-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-copy {
+            position: relative;
+            z-index: 2;
+            width: min(56%, 760px);
+            padding: clamp(34px, 4.2vw, 58px) clamp(28px, 4vw, 52px) clamp(34px, 4.8vw, 60px) 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(90deg, rgba(251,251,248,.96) 0%, rgba(251,251,248,.92) 78%, rgba(251,251,248,0) 100%);
+        }
+
+        .hero-panel::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 54%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,.12), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-family: "Glock Grotesk", var(--condensed);
+            font-size: clamp(54px, 9vw, 116px);
+            line-height: .84;
+            letter-spacing: -.055em;
+            font-weight: 400;
+            text-transform: uppercase;
+            max-width: 760px;
+            margin: 0 0 28px;
+        }
+
+        .hero-title::first-line { letter-spacing: -.065em; }
+
+        .hero-tagline {
+            font-size: clamp(18px, 2.1vw, 25px);
+            font-weight: 300;
+            line-height: 1.22;
+            max-width: 560px;
+            color: rgba(10,10,9,.82);
+            margin-left: 0;
+        }
+
+        .nav-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--ink);
+            margin-top: 54px;
+            margin-left: clamp(0px, 8vw, 94px);
+            border-top: 1px solid var(--hairline);
+            padding-top: 14px;
+            width: fit-content;
+        }
+
+        .nav-trigger:hover .vector-arrow { transform: translateX(8px); opacity: .55; }
+        .vector-arrow { width: 34px; height: 22px; transition: transform .45s cubic-bezier(.16, 1, .3, 1), opacity .25s ease; }
+
+
+        .about-layout { width: 100%; }
+
+        .about-text-container {
+            display: grid;
+            grid-template-columns: 168px minmax(520px, 690px) minmax(120px, 1fr);
+            column-gap: clamp(38px, 6vw, 86px);
+            row-gap: 22px;
+            align-items: start;
+            max-width: 1180px;
+            margin-bottom: 118px;
+            position: relative;
+        }
+
+        .about-text-container::before { display: none; }
+
+        .profile-img {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+            width: 168px;
+            height: 238px;
+            object-fit: cover;
+            object-position: center 18%;
+            display: block;
+            filter: grayscale(100%) contrast(1.08) brightness(1.05);
+            border-radius: 0;
+            border: 1px solid rgba(0,0,0,.18);
+            box-shadow: none;
+            margin-top: 12px;
+        }
+
+        .about-text-container p {
+            grid-column: 2;
+            font-size: clamp(18px, 1.55vw, 22px);
+            line-height: 1.28;
+            margin-bottom: 20px;
+            font-weight: 300;
+            max-width: 690px;
+            letter-spacing: -.012em;
+        }
+
+        .about-text-container p:first-of-type {
+            margin-top: -6px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(0,0,0,.16);
+        }
+
+        .about-statement {
+            font-size: clamp(24px, 2.4vw, 34px) !important;
+            line-height: 1.12 !important;
+            letter-spacing: -0.025em !important;
+            max-width: 820px !important;
+            margin-bottom: 34px !important;
+        }
+
+        .chron-section {
+            --ink: var(--ink);
+            --muted: rgba(10,10,9,.48);
+            --soft: #c9c9c2;
+            --line: rgba(10,10,9,.15);
+            --accent: #0a0a09;
+            --display: var(--condensed);
+            --mono: var(--mono);
+            width: 100%;
+            border-top: 1px solid var(--hairline);
+            padding-top: 22px;
+        }
+
+        .chron-head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 8px; }
+        .chron-head h2 { font-family: var(--mono); font-size: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin: 0; }
+        .chron-head .hint { font-family: var(--mono); font-size: 10px; letter-spacing: .02em; color: var(--muted); }
+        .chron-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 8px; scrollbar-width: none; }
+        .chron-scroll::-webkit-scrollbar { display: none; }
+        .chron { position: relative; padding-top: 42px; padding-bottom: 215px; padding-left: 16px; padding-right: 132px; min-width: 1060px; }
+        .chron-line { position: absolute; left: 16px; right: 132px; top: 74px; height: 1px; background: var(--line); }
+        .chron-grid { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+        .chron-node { position: relative; display: flex; flex-direction: column; align-items: flex-start; cursor: pointer; }
+        .chron-year { font-family: var(--mono); font-size: 10px; line-height: 1.18; letter-spacing: .02em; color: var(--muted); transition: color .2s; max-width: 118px; text-transform: uppercase; }
+        .chron-node.is-open .chron-year, .chron-node:hover .chron-year { color: var(--ink); }
+        .chron-dotwrap { position: relative; height: 24px; display: flex; align-items: center; margin-top: 8px; }
+        .chron-dot { position: relative; z-index: 2; width: 9px; height: 9px; border-radius: 999px; background: var(--soft); box-shadow: 0 0 0 7px var(--bg); transition: transform .25s, background .25s; }
+        .chron-node.is-open .chron-dot, .chron-node:hover .chron-dot { transform: scale(1.42); background: var(--accent); }
+        .chron-ping { position: absolute; left: -7px; width: 23px; height: 23px; border-radius: 999px; background: var(--accent); opacity: 0; }
+        .chron-node.is-open .chron-ping { opacity: .12; animation: chron-ping 2.6s ease-out infinite; }
+        @keyframes chron-ping { 0% { transform: scale(.5); opacity: .24; } 100% { transform: scale(2.2); opacity: 0; } }
+        .chron-pop { position: absolute; top: 108px; left: 0; width: max(235px, 100%); padding-right: 14px; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; pointer-events: none; }
+        .chron-node.is-open .chron-pop, .chron-node:hover .chron-pop { opacity: 1; transform: none; }
+        .chron-node.chron-present .chron-year { color: var(--ink); }
+        .chron-node.chron-present .chron-dot { transform: scale(1.42); background: var(--accent); }
+        .chron-node.chron-present .chron-ping { opacity: .12; animation: chron-ping 2.6s ease-out infinite; }
+        .chron-node.chron-present .chron-pop { opacity: 1; transform: none; }
+        .chron-node.chron-present { transform: translateX(118px); }
+        .chron-node:nth-last-child(2) .chron-pop { width: max(270px, 118%); }
+        .chron-pop .inner { border-left: 1px solid var(--accent); padding-left: 16px; }
+        .chron-date { font-family: var(--mono); font-size: 9px; line-height: 1.2; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; }
+        .chron-role { font-family: var(--display); font-size: 21px; font-weight: 400; line-height: 1.02; letter-spacing: -.025em; margin: 0 0 7px; }
+        .chron-place { font-size: 14px; font-weight: 300; color: var(--muted); margin: 0 0 14px; line-height: 1.18; }
+        .chron-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .chron-tags span { font-family: var(--mono); font-size: 9px; padding: 4px 7px; background: transparent; border: 1px solid rgba(0,0,0,.12); color: var(--ink); }
+        .chron-node:last-child .chron-pop { left: auto; right: 0; }
+        .chron-node:last-child .chron-pop .inner { border-left: 0; border-right: 1px solid var(--accent); padding-left: 0; padding-right: 16px; text-align: right; }
+        .chron-node:last-child .chron-tags { justify-content: flex-end; }
+
+        .category-block { margin-bottom: 112px; }
+        .category-title {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 12px;
+            margin-bottom: 34px;
+        }
+
+        .project-item {
+            display: grid;
+            grid-template-columns: minmax(220px, 310px) 1fr;
+            gap: clamp(32px, 6vw, 84px);
+            margin-bottom: 0;
+            padding: 28px 0;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(0,0,0,.09);
+        }
+
+        .project-item:hover { background: linear-gradient(90deg, rgba(0,0,0,.025), transparent 45%); }
+        .project-thumb {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+            margin: 0 0 18px;
+            filter: grayscale(100%) contrast(1.06) brightness(1.02);
+            border: 1px solid rgba(0,0,0,.15);
+            transform: translateZ(0);
+            transition: filter .65s cubic-bezier(.16, 1, .3, 1), transform .65s cubic-bezier(.16, 1, .3, 1), border-color .65s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        .project-item:hover .project-thumb,
+        .project-item:focus-within .project-thumb {
+            filter: grayscale(0%) contrast(1.03) brightness(1.0) saturate(1.06);
+            transform: scale(1.018);
+            border-color: rgba(0,0,0,.26);
+        }
+
+        .project-meta h4 { font-size: clamp(25px, 3vw, 38px); font-weight: 400; margin-bottom: 8px; letter-spacing: -.035em; line-height: .94; text-transform: uppercase; }
+        .project-content p { font-size: clamp(17px, 1.55vw, 21px); font-weight: 300; line-height: 1.28; margin-bottom: 22px; max-width: 780px; }
+        .tech-tag { font-family: var(--mono); font-size: 9px; color: rgba(10,10,9,.72); background: transparent; padding: 5px 8px; display: inline-block; margin: 4px 5px 4px 0; border: 1px solid rgba(0,0,0,.14); }
+
+        footer { padding: 56px 0 38px; display: flex; justify-content: space-between; }
+        .footer-contact { color: rgba(10,10,9,.72); text-decoration: none; font-size: 13px; letter-spacing: .045em; }
+        .footer-contact:hover { color: var(--ink); }
+
+        @media (max-width: 900px) {
+            .interface-grid { padding: 105px 24px 0; }
+            header { padding: 18px 24px 14px; }
+            header::after { left: 24px; right: 24px; bottom: -1px; }
+            .nav-links { display: none; }
+            section { padding: 106px 0; }
+            .hero-panel { min-height: 78vh; }
+            .hero-copy { width: 100%; min-height: 78vh; padding: 34px 22px 36px 0; background: linear-gradient(180deg, rgba(251,251,248,.94) 0%, rgba(251,251,248,.86) 58%, rgba(251,251,248,.42) 100%); }
+            .hero-dot-canvas { opacity: .72; }
+            .hero-title {
+                       font-family: "Helvetica Neue Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+                       font-weight: 400;
+                       letter-spacing: -0.06em;
+                        }
+            .hero-tagline, .nav-trigger { margin-left: 0; }
+            .about-text-container { display: block; margin-bottom: 86px; }
+            .about-text-container::before { display: none; }
+            .profile-img { width: 164px; height: 224px; margin-bottom: 34px; }
+            .about-text-container p:first-of-type { padding-top: 16px; }
+            .project-item { grid-template-columns: 1fr; gap: 14px; padding: 25px 0; }
+            footer { display: block; }
+            footer .meta-label + .meta-label { margin-top: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+            .hero-dot-canvas { opacity: .45; }
+        }
+
+    </style>
+</head>
+<body>
+
+
+    <header>
+        <div>
+            <div class="meta-label">Identity</div>
+            <a href="#hero" style="font-size: 14px; font-weight: 500; text-decoration: none; color: #000000; display: block; margin-top: 4px;">Meital Geva, Ph.D.</a>
+        </div>
+        <nav class="nav-links">
+            <a href="#about">/ Manifesto</a>
+            <a href="#work">/ Systems Portfolio</a>
+        </nav>
+    </header>
+
+    <div class="interface-grid">
+
+        <section id="hero">
+            <div class="hero-panel reveal-element" id="heroPanel">
+                <canvas id="heroDotCanvas" class="hero-dot-canvas" aria-hidden="true"></canvas>
+                <div class="hero-copy" id="heroCopy">
+                    <div class="meta-label" style="margin-bottom: 20px;">Core Thesis Matrix</div>
+                    <h2 class="hero-title">SCIENCE · TECHNOLOGY · DESIGN</h2>
+                    <p class="hero-tagline">Revealing the hidden patterns of human nature. I work with signals across biological, behavioral, physical, and computational systems to expose the forces shaping human experience.</p>
+                    
+                    <a href="#about" class="nav-trigger">
+                        <span class="meta-label">Access Profile</span>
+                        <svg class="vector-arrow" viewBox="0 0 32 24" fill="black">
+                            <circle cx="4" cy="12" r="1.5"/><circle cx="10" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="22" cy="12" r="1.5"/>
+                            <circle cx="28" cy="12" r="2"/><circle cx="22" cy="6" r="1.5"/><circle cx="16" cy="2" r="1"/><circle cx="22" cy="18" r="1.5"/><circle cx="16" cy="22" r="1"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about">
+            <div class="reveal-element about-layout">
+                <div class="about-text-container">
+                    <img src="assets/meital-portrait.png" alt="Meital Geva" class="profile-img">
+                    <p>I am a scientist, theoretician, and designer who uses the rigorous tools of advanced engineering to map, protect, and amplify the human experience. Holding a Ph.D. in Mechanical Engineering, I have spent over a decade tracking instability regimes, from managing a university dynamic laboratory to engineering bio-hybrid intelligence loops as an intern in the DLX Design Lab in Tokyo. Today, my practice bridges hard science and deeply human-centered design. I treat algorithms, non-linear mathematics, and biological networks not just as technical tools, but as critical materials to decode human behavior.</p>
+                    <p class="about-statement"> I build physical pipelines, interactive interfaces, and installations that intercept the invisible systemic frameworks constraining us. My work exists to reveal the raw friction of how we connect, feel, and survive inside algorithmic and institutional conditions.</p>
+                </div>
+
+                <div id="chronology" class="chron-section" aria-label="Operational chronology">
+                    <div class="chron-head">
+                        <h2>Operational chronology</h2>
+                        <span class="hint">Hover node to inspect</span>
+                    </div>
+
+                    <div class="chron-scroll">
+                        <div class="chron">
+                            <div class="chron-line"></div>
+                            <div class="chron-grid">
+
+                                <div class="chron-node">
+                                    <span class="chron-year">Simulator Instructor</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2004 — 2007</p>
+                                        <p class="chron-role">Air Force Simulator Instructor</p>
+                                        <p class="chron-place">Israeli Air Force</p>
+                                        <div class="chron-tags"><span>systems</span><span>instruction</span><span>human factors</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node">
+                                    <span class="chron-year">Mechanical Engineering</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2007 — 2011</p>
+                                        <p class="chron-role">Mechanical Engineering B.Sc.</p>
+                                        <p class="chron-place">Ben-Gurion University</p>
+                                        <div class="chron-tags"><span>mechanical engineering</span><span>systems</span><span>technical foundation</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node">
+                                    <span class="chron-year">Ph.D. / Shock Waves</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2011 — 2017</p>
+                                        <p class="chron-role">Ph.D. Mechanical Engineering</p>
+                                        <p class="chron-place">Ben-Gurion University · highest honors</p>
+                                        <div class="chron-tags"><span>shock waves</span><span>PRL</span><span>PNAS</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node">
+                                    <span class="chron-year">Postdoc + Lab Lead</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2020 — 2024</p>
+                                        <p class="chron-role">Postdoc &amp; Head of Research Lab</p>
+                                        <p class="chron-place">Tel Aviv University</p>
+                                        <div class="chron-tags"><span>turbulence</span><span>wind–wave coupling</span><span>Alon Fellowship</span><span>leadership</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node">
+                                    <span class="chron-year">Industrial Design</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2024 — 2026</p>
+                                        <p class="chron-role">M.Des. Industrial Design</p>
+                                        <p class="chron-place">Bezalel Academy</p>
+                                        <div class="chron-tags"><span>interaction</span><span>sensory</span><span>speculative</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node">
+                                    <span class="chron-year">DLX Tokyo Internship</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">2025</p>
+                                        <p class="chron-role">DLX Design Lab Internship · Living Technologies</p>
+                                        <p class="chron-place">University of Tokyo</p>
+                                        <div class="chron-tags"><span>brain organoids</span><span>information theory</span><span>signal processing</span></div>
+                                    </div></div>
+                                </div>
+
+                                <div class="chron-node chron-present">
+                                    <span class="chron-year">Present Practice</span>
+                                    <div class="chron-dotwrap"><span class="chron-ping"></span><span class="chron-dot"></span></div>
+                                    <div class="chron-pop"><div class="inner">
+                                        <p class="chron-date">Present</p>
+                                        <p class="chron-role">Human Experience · Independent Practice</p>
+                                        <p class="chron-place">Research · Physical pipelines · interactive interfaces · installations</p>
+                                        <div class="chron-tags"><span>nonlinear dynamics</span><span>algorithmic conditions</span><span>critical design</span><span>sensing</span></div>
+                                    </div></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="work">
+            <div class="reveal-element" style="width: 100%;">
+                <div class="meta-label" style="margin-bottom: 56px;">Inspected Human-System Domains</div>
+
+                <div class="category-block">
+                    <h3 class="category-title">01 / Bio-Hybrid Intelligence & Social Topologies</h3>
+                    
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/proxybond.png" alt="ProxyBond living neural proxy system">
+                            <h4>ProxyBond</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Speculative Clinical Service</div>
+                        </div>
+                        <div class="project-content">
+                            <p>ProxyBond is a fictional parenting-training service based on a living neural proxy. It exposes the paradox of modern parenting: parents are increasingly expected to prevent emotional, cognitive, and developmental harm, while the child remains a nonlinear biological person shaped by genetics, temperament, environment, chance, intergenerational patterns, and their own agency.</p>
+                            <p>The service promises preparation before harm occurs. Parents rehearse responses, test decisions, and receive feedback on emotional regulation, readiness, and developmental risk. But there is no final training for parenting. Even a proxy generated from the parent’s biological material remains unpredictable, turning preparation into repetition: more training, more measurement, and more guilt.</p>
+                            <p>ProxyBond functions as a pharmakon: remedy and poison at once. It appears to offer reassurance and clinical support, while revealing how the desire to prepare better can become a mechanism of control, scoring, responsibility, and blame.</p>
+                            <div>
+                                <span class="tech-tag">Speculative Design</span><span class="tech-tag">Living Neural Proxy</span><span class="tech-tag">Parenting Systems</span><span class="tech-tag">Clinical Interface</span><span class="tech-tag">Emotional Regulation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/organoids-dialogue.jpg" alt="Organoids Dialogue experimental setup">
+                            <h4>Organoids Dialogue</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Tokyo Lab Array</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A living neural communication system that asks whether two brain organoids can begin to speak. Moving beyond simple correlation, the project reveals neural interaction as a layered process of noise reduction, synchrony, and temporary gating, attempting to decode the structure of emergent, directed dialogue.</p>
+                            <div>
+                                <span class="tech-tag">20kHz Electrophysiology</span><span class="tech-tag">Causal Inference</span><span class="tech-tag">Brain Organoids</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/tinder-particle-simulation.png" alt="Tinder Particle Simulation particle field">
+                            <h4>Tinder Particle Simulation</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Stochastic Model</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A particle simulation of dating-app culture, revealing the asymmetry, reward loops, and emotional fatigue behind algorithmic intimacy. It translates raw emotional experience into a probabilistic field, exposing how modern intimacy becomes strategy and exhaustion without removing the discomfort of the subject.</p>
+                            <div>
+                                <span class="tech-tag">Brownian Motion</span><span class="tech-tag">Behavioral Parameters</span><span class="tech-tag">p5.js</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-block">
+                    <h3 class="category-title">02 / Immersive Architecture & Behavioral Criticism</h3>
+                    
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/nrts-assessment-system.png" alt="NRTS Assessment System interface">
+                            <h4>NRTS Assessment System</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Speculative Clinic</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A speculative certification clinic where emotional neutrality becomes measurable, trainable, and printable. The system enters the contradiction between human feeling and institutional efficiency, revealing how emotional life is converted into operational risk and exposing emotional surveillance as future labor infrastructure.</p>
+                            <div>
+                                <span class="tech-tag">Affective Computing</span><span class="tech-tag">MediaPipe</span><span class="tech-tag">Hardware Control</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/i-am-here.png" alt="I AM HERE sensory installation">
+                            <h4>I AM HERE</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Sensory Installation</div>
+                        </div>
+                        <div class="project-content">
+                            <p>An installation where the visitor slowly disappears, exposing the fragile border between presence, perception, and social erasure. By using computer vision not for recognition but for erasure, the project reveals disappearance as a layered phenomenon: sensory, technological, psychological, and gendered. Done in collaboration with Carmi Dror.</p>
+                            <div>
+                                <span class="tech-tag">Computer Vision</span><span class="tech-tag">YOLOv8</span><span class="tech-tag">Embodied Interaction</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/optimal-chaos.png" alt="Optimal Chaos projected sand topography">
+                            <h4>Optimal Chaos</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Physical-Digital Model</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A physical-digital model of decision-making, where sand, particles, branching paths, and distorted time expose uncertainty and regret. It reveals choice as constrained motion: a negotiation between intention, environment, and nonlinear consequences.</p>
+                            <div>
+                                <span class="tech-tag">RealSense Depth</span><span class="tech-tag">Gradient Fields</span><span class="tech-tag">Classical Mechanics</span>
+                            </div>
+                        </div>
+                    </div>
+                   <!-- Hidden: DVIR-TOPIA
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <h4>DVIR-TOPIA</h4>
+                            <div class="meta-label" style="opacity: 0.5;">AI Cinema</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A front-yard AI cinema where visitors become animated figures inside a shared fantasy scene. The project uses lightweight AI tracking to reduce the body to gesture and movement, revealing how AI tracking can become a social mirror for communal play rather than a surveillance tool.</p>
+                            <div>
+                                <span class="tech-tag">PoseNet</span><span class="tech-tag">Real-time Skeletal Tracking</span><span class="tech-tag">Python</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              -->
+
+                <div class="category-block">
+                    <h3 class="category-title">03 / Sensory Architecture & Cognition</h3>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/qr-taxonomy.png" alt="QR Taxonomy scent encoding system">
+                            <h4>QR Taxonomy</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Encoding the Invisible</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A visual system for scent that refuses to simplify smell, making its hidden chemical-perceptual structure legible. Treating scent as a high-dimensional signal, the project builds chemical-perceptual fingerprints to expose unexpected proximities. Its uniqueness is the refusal to flatten human perception into labels, offering a way to view invisible complexity without pretending it is simple.</p>
+                            <div>
+                                <span class="tech-tag">Python</span><span class="tech-tag">Molecular Descriptors</span><span class="tech-tag">UMAP/t-SNE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/light-as-sound.png" alt="Light as Sound synesthetic translation system">
+                            <h4>Light as Sound</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Synesthetic Translation</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A system that treats visual experience as raw data, directly converting changing light and chromatic intensity into acoustic structure. It reveals light as a dynamic waveform where brightness, color balance, and rhythm become audible behavior, using signal conversion as a deep experiential bridge between the senses rather than a mere digital effect. Done in collaboration with Carmi Dror.</p>
+                            <div>
+                                <span class="tech-tag">Signal Theory</span><span class="tech-tag">RGB Luminance Extraction</span><span class="tech-tag">Amplitude Modulation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/kelvin-helmholtz-cup.png" alt="Kelvin-Helmholtz Cup flow instability object">
+                            <h4>Kelvin-Helmholtz Cup</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Thermodynamic Form</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A coffee cup shaped by flow instability, turning passive cooling into internal circulation. The project applies fluid-dynamics thinking to an everyday object, asking how internal motion can preserve temperature rather than relying solely on insulation. By translating advanced instability physics into a simple product logic, it reveals that a familiar domestic object can behave as a designed flow field where geometry, vortices, and convection actively interact.</p>
+                            <div>
+                                <span class="tech-tag">Fluid Dynamics</span><span class="tech-tag">Compressible Euler Equations</span><span class="tech-tag">Finite Volume</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden per request: Silver Lens
+<div class="project-item">
+                        <div class="project-meta">
+                            <h4>Silver Lens</h4>
+                            <div class="meta-label" style="opacity: 0.5;">UX Cognitive System</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A camera app for older adults designed around confidence rather than features. The project addresses the tension that interfaces often punish uncertainty with feature overload. By utilizing cognitive psychology to prioritize emotional safety, it reveals that confidence itself is a crucial design material to restore user autonomy.</p>
+                            <div>
+                                <span class="tech-tag">Cognitive Ergonomics</span><span class="tech-tag">Figma Prototyping</span><span class="tech-tag">User Flows</span>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+
+                <div class="category-block">
+                    <h3 class="category-title">04 / Complex Dynamics & Physical Systems</h3>
+<div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/alien-invasion.png" alt="Kelvin-Helmholtz Cup flow instability object">
+                            <h4>Alien Invasion</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Algorithmic Logic</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A game about indirect control: the player shapes the field, but the system chooses the path. The project reveals pathfinding as a negotiation between intention, obstacle, and prediction, making algorithmic decision-making playful and visible without explaining it abstractly.</p>
+                            <div>
+                                <span class="tech-tag">p5.js</span><span class="tech-tag">A* Pathfinding</span><span class="tech-tag">Procedural Interaction</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Hidden per request: Bloch Oscillations
+<div class="project-item">
+                        <div class="project-meta">
+                            <h4>Bloch Oscillations</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Quantum Mechanics</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A classical mechanical system that makes quantum-like behavior visible. This research bridges classical mechanics and quantum physics through a chain of coupled pendula, revealing abstract quantum logic—such as topological phase evolution—through a physical, observable system.</p>
+                            <div>
+                                <span class="tech-tag">Coupled Pendula</span><span class="tech-tag">SSH Model</span><span class="tech-tag">Frequency Analysis</span>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+ <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/whiteboard-mechanics.png" alt="Kelvin-Helmholtz Cup flow instability object">
+                            <h4>Whiteboard Mechanics</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Visual Explanation</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A drawn guide that turns shock-wave theory into a clear visual narrative. It translates shock reflections and Euler-equation logic into step-by-step visual explanation, revealing the narrative structure inside equations and treating scientific explanation as structural design.</p>
+                            <div>
+                                <span class="tech-tag">Scientific Communication</span><span class="tech-tag">Hand-drawn Animation</span><span class="tech-tag">Compressible-flow Theory</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/dialogue-in-turbulence.png" alt="Kelvin-Helmholtz Cup flow instability object">
+                            <h4>A Dialogue in Turbulence</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Wind-Wave Feedback</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A study of wind and waves as a feedback system where apparent chaos hides organized structure. Using high-frequency sensor data, the work extracted structure from noisy measurements, revealing the organized exchange of momentum and energy inside a stochastic wind-water interface.</p>
+                            <div>
+                                <span class="tech-tag">X-film Anemometry</span><span class="tech-tag">MATLAB Signal Processing</span><span class="tech-tag">Machine-Learning</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-item">
+                        <div class="project-meta">
+                            <img class="project-thumb" src="assets/shock-waves-nonlinear-structures.png" alt="Kelvin-Helmholtz Cup flow instability object">
+                            <h4>Shock Waves & Nonlinear Structures</h4>
+                            <div class="meta-label" style="opacity: 0.5;">Supersonic Flows</div>
+                        </div>
+                        <div class="project-content">
+                            <p>A body of research exposing hidden order inside unsteady shock-wave reflections. Shock patterns can appear abrupt and unstable, but this project combines theory, experiment, and automated visual analysis to decode their dynamic nonlinear systems and topological changes.</p>
+                            <div>
+                                <span class="tech-tag">Shock-tube Experiments</span><span class="tech-tag">Euler Equations</span><span class="tech-tag">Fluent Simulations</span>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+
+                    
+
+            </div>
+        </section>
+
+        <footer>
+            <div class="meta-label" style="opacity: 0.45;">Contact</div>
+            <a class="meta-label footer-contact" href="mailto:meitals112@gmail.com">meitals112@gmail.com</a>
+        </footer>
+
+    </div>
+
+    <script>
+        // 1. BLUR REVEAL SYSTEM MECHANICS
+        const revealElements = document.querySelectorAll('.reveal-element');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // 2. CHRONOLOGY HOVER MECHANICS
+        (function () {
+            var scope = document.getElementById('chronology');
+            var nodes = Array.prototype.slice.call(scope.querySelectorAll('.chron-node'));
+            function open(n){ nodes.forEach(function(x){ x.classList.remove('is-open'); }); n.classList.add('is-open'); }
+            nodes.forEach(function(n){
+                n.addEventListener('mouseenter', function(){ open(n); });
+                n.addEventListener('click', function(){ open(n); });
+                n.addEventListener('focusin', function(){ open(n); });
+            });
+            var strip = scope.querySelector('.chron');
+            if (strip) strip.addEventListener('mouseleave', function(){ nodes.forEach(function(x){ x.classList.remove('is-open'); }); });
+        })();
+        // 3. HERO DOT GRID FIELD
+        (function () {
+            const canvas = document.getElementById('heroDotCanvas');
+            const panel = document.getElementById('heroPanel');
+            const copy = document.getElementById('heroCopy');
+            if (!canvas || !panel || !copy) return;
+
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let width = 0, height = 0;
+            let grid = [];
+            let activeIndices = [];
+            let hub = null;
+            let bursts = [];
+            let movingLinks = [];
+            let raf = null;
+            let clipLeft = 0;
+
+            const cfg = {
+                cols: 19,
+                rows: 11,
+                marginX: 0.045,
+                marginY: 0.14,
+                baseRadius: 1.25,
+                activeRadius: 2.8,
+                hubRadius: 7.8,
+                lineWidth: 1.0,
+                burstCount: 8,
+                moveDurationMin: 2600,
+                moveDurationMax: 3400,
+                arrivePause: 1800,
+                emitDelay: 260,
+                burstDuration: 1450,
+                linger: 1150,
+                fadeDuration: 1500,
+                dissolveDurationFactor: 0.82,
+                pulseSpeed: 0.0022
+            };
+
+            const smooth = t => t * t * (3 - 2 * t);
+            const easeOut = t => 1 - Math.pow(1 - t, 3);
+            const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            const lerp = (a, b, t) => a + (b - a) * t;
+            const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+            function buildGrid() {
+                grid = [];
+                activeIndices = [];
+                const startX = width * cfg.marginX;
+                const startY = height * cfg.marginY;
+                const stepX = (width * (1 - cfg.marginX * 2)) / (cfg.cols - 1);
+                const stepY = (height * (1 - cfg.marginY * 2)) / (cfg.rows - 1);
+
+                const panelRect = panel.getBoundingClientRect();
+                const copyRect = copy.getBoundingClientRect();
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
+                clipLeft = mobileHero ? width * 0.50 : Math.max(copyRect.right - panelRect.left + 28, width * 0.56);
+
+                for (let row = 0; row < cfg.rows; row++) {
+                    for (let col = 0; col < cfg.cols; col++) {
+                        const point = {
+                            index: row * cfg.cols + col,
+                            row,
+                            col,
+                            x: startX + col * stepX,
+                            y: startY + row * stepY
+                        };
+                        grid.push(point);
+                        if (point.x >= clipLeft && row > 0 && row < cfg.rows - 1) {
+                            activeIndices.push(point.index);
+                        }
+                    }
+                }
+            }
+
+            function nearestActiveIndex(targetX, targetY) {
+                let best = activeIndices[0] ?? 0;
+                let bestDist = Infinity;
+                for (const idx of activeIndices) {
+                    const p = grid[idx];
+                    const d = Math.hypot(p.x - targetX, p.y - targetY);
+                    if (d < bestDist) { bestDist = d; best = idx; }
+                }
+                return best;
+            }
+
+            function initHub(now) {
+                const startIndex = nearestActiveIndex(width * 0.73, height * 0.5);
+                const p = grid[startIndex];
+                hub = {
+                    currentIndex: startIndex,
+                    previousIndex: startIndex,
+                    nextIndex: startIndex,
+                    x: p.x,
+                    y: p.y,
+                    phase: 'hold',
+                    phaseStart: now,
+                    phaseEnd: now + cfg.arrivePause,
+                    moveDuration: 0,
+                    emittedForStop: false
+                };
+                bursts = [];
+                movingLinks = [];
+                spawnBurst(now + cfg.emitDelay, p.x, p.y, startIndex);
+            }
+
+            function resizeHeroCanvas() {
+                const rect = panel.getBoundingClientRect();
+                width = Math.max(1, rect.width);
+                height = Math.max(1, rect.height);
+                canvas.width = Math.round(width * dpr);
+                canvas.height = Math.round(height * dpr);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                buildGrid();
+                initHub(performance.now());
+                draw(performance.now());
+            }
+
+            function neighbors(index) {
+                const p = grid[index];
+                const out = [];
+                const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (const [dx, dy] of dirs) {
+                    const c = p.col + dx;
+                    const r = p.row + dy;
+                    if (c >= 0 && c < cfg.cols && r >= 0 && r < cfg.rows) {
+                        const idx = r * cfg.cols + c;
+                        if (grid[idx].x >= clipLeft) out.push(idx);
+                    }
+                }
+                return out;
+            }
+
+            function chooseNextIndex() {
+                let opts = neighbors(hub.currentIndex);
+                if (opts.length > 1) opts = opts.filter(i => i !== hub.previousIndex);
+                if (!opts.length) opts = neighbors(hub.currentIndex);
+                return opts[Math.floor(Math.random() * opts.length)] || hub.currentIndex;
+            }
+
+            function randomTargets(count, originX, originY, excludeIndex) {
+                const candidates = activeIndices.filter(i => i !== excludeIndex).map(i => grid[i]);
+                for (let i = candidates.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+                }
+                const chosen = [];
+                const buckets = new Set();
+                for (const p of candidates) {
+                    const ang = Math.atan2(p.y - originY, p.x - originX);
+                    const bucket = Math.floor(((ang + Math.PI) / (Math.PI * 2)) * 10);
+                    if (!buckets.has(bucket) || chosen.length > 4) {
+                        chosen.push(p.index);
+                        buckets.add(bucket);
+                    }
+                    if (chosen.length >= count) break;
+                }
+                return chosen;
+            }
+
+            function spawnBurst(startTime, originX, originY, originIndex) {
+                const targets = randomTargets(cfg.burstCount, originX, originY, originIndex);
+                const newBursts = targets.map((idx, i) => ({
+                    idx,
+                    originX,
+                    originY,
+                    start: startTime + i * 62,
+                    duration: cfg.burstDuration + Math.random() * 220,
+                    linger: cfg.linger,
+                    fade: cfg.fadeDuration + Math.random() * 220
+                }));
+                bursts.push(...newBursts);
+            }
+
+            function burstState(burst, now) {
+                const t = now - burst.start;
+                if (t < 0) return null;
+                if (t < burst.duration) {
+                    const p = easeOut(t / burst.duration);
+                    return { drawP: p, alpha: p, dotScale: p };
+                }
+                if (t < burst.duration + burst.linger) {
+                    return { drawP: 1, alpha: 1, dotScale: 1 };
+                }
+                const fadeT = (t - burst.duration - burst.linger) / burst.fade;
+                if (fadeT >= 1) return null;
+                const p = smooth(fadeT);
+                return { drawP: 1, alpha: 1 - p, dotScale: 1 - p * 0.12 };
+            }
+
+            function convertBurstsToMovingLinks(now) {
+                movingLinks = [];
+                for (const burst of bursts) {
+                    const state = burstState(burst, now);
+                    if (!state || state.alpha < 0.06) continue;
+                    movingLinks.push({
+                        idx: burst.idx,
+                        startAlpha: state.alpha,
+                        startScale: Math.max(0.3, state.dotScale),
+                        startTime: now,
+                        duration: hub.moveDuration * cfg.dissolveDurationFactor
+                    });
+                }
+                bursts = [];
+            }
+
+            function movingLinkState(link, now) {
+                const t = (now - link.startTime) / link.duration;
+                if (t < 0 || t >= 1) return null;
+                const p = smooth(t);
+                return { alpha: link.startAlpha * (1 - p), dotScale: Math.max(0, link.startScale * (1 - p)) };
+            }
+
+            function updateHub(now) {
+                if (hub.phase === 'hold') {
+                    if (!hub.emittedForStop && now >= hub.phaseStart + cfg.emitDelay) {
+                        spawnBurst(now, hub.x, hub.y, hub.currentIndex);
+                        hub.emittedForStop = true;
+                    }
+                    if (now >= hub.phaseEnd) {
+                        hub.phase = 'move';
+                        hub.phaseStart = now;
+                        hub.moveDuration = cfg.moveDurationMin + Math.random() * (cfg.moveDurationMax - cfg.moveDurationMin);
+                        hub.phaseEnd = now + hub.moveDuration;
+                        hub.previousIndex = hub.currentIndex;
+                        hub.nextIndex = chooseNextIndex();
+                        convertBurstsToMovingLinks(now);
+                    }
+                } else {
+                    const from = grid[hub.currentIndex];
+                    const to = grid[hub.nextIndex];
+                    const t = clamp((now - hub.phaseStart) / hub.moveDuration, 0, 1);
+                    const p = easeInOut(t);
+                    hub.x = lerp(from.x, to.x, p);
+                    hub.y = lerp(from.y, to.y, p);
+                    if (t >= 1) {
+                        hub.currentIndex = hub.nextIndex;
+                        hub.x = to.x;
+                        hub.y = to.y;
+                        hub.phase = 'hold';
+                        hub.phaseStart = now;
+                        hub.phaseEnd = now + cfg.arrivePause;
+                        hub.emittedForStop = false;
+                        movingLinks = [];
+                    }
+                }
+            }
+
+            function prune(now) {
+                bursts = bursts.filter(b => (now - b.start) < (b.duration + b.linger + b.fade));
+                movingLinks = movingLinks.filter(l => (now - l.startTime) < l.duration);
+            }
+
+            function drawBaseGrid() {
+                ctx.fillStyle = 'rgba(10,10,9,.19)';
+                for (const p of grid) {
+                    ctx.globalAlpha = p.x < clipLeft ? 0.20 : 0.34;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, cfg.baseRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function drawBursts(now) {
+                for (const burst of bursts) {
+                    const state = burstState(burst, now);
+                    if (!state) continue;
+                    const target = grid[burst.idx];
+                    const x = burst.originX + (target.x - burst.originX) * state.drawP;
+                    const y = burst.originY + (target.y - burst.originY) * state.drawP;
+                    ctx.strokeStyle = 'rgba(10,10,9,1)';
+                    ctx.globalAlpha = 0.10 + state.alpha * 0.34;
+                    ctx.lineWidth = cfg.lineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(burst.originX, burst.originY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
+                    ctx.fillStyle = 'rgba(10,10,9,1)';
+                    ctx.globalAlpha = 0.16 + state.alpha * 0.44;
+                    ctx.beginPath();
+                    ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function drawMovingLinks(now) {
+                for (const link of movingLinks) {
+                    const state = movingLinkState(link, now);
+                    if (!state) continue;
+                    const target = grid[link.idx];
+                    ctx.strokeStyle = 'rgba(10,10,9,1)';
+                    ctx.globalAlpha = 0.08 + state.alpha * 0.34;
+                    ctx.lineWidth = cfg.lineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(hub.x, hub.y);
+                    ctx.lineTo(target.x, target.y);
+                    ctx.stroke();
+                    const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
+                    ctx.fillStyle = 'rgba(10,10,9,1)';
+                    ctx.globalAlpha = 0.14 + state.alpha * 0.36;
+                    ctx.beginPath();
+                    ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function drawHub(now) {
+                const moving = hub.phase === 'move';
+                const pulse = moving ? 0.985 : 0.97 + Math.sin(now * cfg.pulseSpeed) * 0.035;
+                const haloRadius = cfg.hubRadius * (moving ? 2.15 : 2.9);
+                const halo = ctx.createRadialGradient(hub.x, hub.y, 0, hub.x, hub.y, haloRadius);
+                halo.addColorStop(0, 'rgba(10,10,9,.10)');
+                halo.addColorStop(1, 'rgba(10,10,9,0)');
+                ctx.fillStyle = halo;
+                ctx.globalAlpha = 1;
+                ctx.beginPath();
+                ctx.arc(hub.x, hub.y, haloRadius * pulse, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'rgba(10,10,9,.58)';
+                ctx.beginPath();
+                ctx.arc(hub.x, hub.y, cfg.hubRadius * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function draw(now) {
+                ctx.clearRect(0, 0, width, height);
+                drawBaseGrid();
+                drawBursts(now);
+                drawMovingLinks(now);
+                drawHub(now);
+                ctx.globalAlpha = 1;
+            }
+
+            function loop(now) {
+                updateHub(now);
+                prune(now);
+                draw(now);
+                raf = requestAnimationFrame(loop);
+            }
+
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(resizeHeroCanvas, 80);
+            }, { passive: true });
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) cancelAnimationFrame(raf);
+                else if (!reduceMotion) raf = requestAnimationFrame(loop);
+            });
+
+            resizeHeroCanvas();
+            if (!reduceMotion) raf = requestAnimationFrame(loop);
+        })();
+
+    </script>
+</body>
+</html>
