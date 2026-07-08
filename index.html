@@ -390,6 +390,22 @@
             border-color: rgba(0,0,0,.26);
         }
 
+        .project-link {
+          display: inline-block;
+          margin-top: 14px;
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #111;
+          text-decoration: none;
+          border-bottom: 1px solid #111;
+          line-height: 1.2;
+        }
+
+.project-link:hover {
+  opacity: 0.55;
+}
+
         .project-meta h4 { font-size: clamp(25px, 3vw, 38px); font-weight: 400; margin-bottom: 8px; letter-spacing: -.035em; line-height: .94; text-transform: uppercase; }
         .project-content p { font-size: clamp(17px, 1.55vw, 21px); font-weight: 300; line-height: 1.28; margin-bottom: 22px; max-width: 780px; }
         .tech-tag { font-family: var(--mono); font-size: 9px; color: rgba(10,10,9,.72); background: transparent; padding: 5px 8px; display: inline-block; margin: 4px 5px 4px 0; border: 1px solid rgba(0,0,0,.14); }
@@ -418,6 +434,124 @@
             .profile-img { width: 164px; height: 224px; margin-bottom: 34px; }
             .about-text-container p:first-of-type { padding-top: 16px; }
             .project-item { grid-template-columns: 1fr; gap: 14px; padding: 25px 0; }
+
+            /* MOBILE FIX: make projects visible */
+            #work {
+                display: block;
+                min-height: auto;
+                padding: 106px 0 70px;
+            }
+
+            #work .reveal-element {
+                opacity: 1;
+                filter: none;
+                transform: none;
+            }
+
+            /* MOBILE FIX: vertical CV trajectory */
+            .chron-head {
+                align-items: flex-start;
+            }
+
+            .chron-head .hint {
+                display: none;
+            }
+
+            .chron-scroll {
+                overflow: visible;
+                padding-bottom: 0;
+            }
+
+            .chron {
+                min-width: 0;
+                padding: 22px 0 20px;
+            }
+
+            .chron-line {
+                left: 116px;
+                right: auto;
+                top: 28px;
+                bottom: 28px;
+                width: 1px;
+                height: auto;
+            }
+
+            .chron-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .chron-node {
+                display: grid;
+                grid-template-columns: 96px 28px minmax(0, 1fr);
+                column-gap: 10px;
+                align-items: start;
+                min-height: 76px;
+            }
+
+            .chron-year {
+                grid-column: 1;
+                max-width: 96px;
+                padding-top: 2px;
+            }
+
+            .chron-dotwrap {
+                grid-column: 2;
+                height: 24px;
+                margin-top: 0;
+                justify-content: center;
+            }
+
+            .chron-pop {
+                grid-column: 3;
+                position: static;
+                width: auto;
+                padding-right: 0;
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+                transform: none;
+                transition: opacity .25s ease, max-height .25s ease;
+                pointer-events: none;
+            }
+
+            .chron-node.is-open .chron-pop,
+            .chron-node:hover .chron-pop,
+            .chron-node.chron-present .chron-pop {
+                opacity: 1;
+                max-height: 260px;
+                pointer-events: auto;
+            }
+
+            .chron-node.chron-present {
+                transform: none;
+            }
+
+            .chron-node:last-child .chron-pop {
+                left: auto;
+                right: auto;
+            }
+
+            .chron-node:last-child .chron-pop .inner {
+                border-left: 1px solid var(--accent);
+                border-right: 0;
+                padding-left: 16px;
+                padding-right: 0;
+                text-align: left;
+            }
+
+            .chron-node:last-child .chron-tags {
+                justify-content: flex-start;
+            }
+
+            /* MOBILE FIX: image becomes color when project block is in view */
+            .project-item.is-inview .project-thumb {
+                filter: grayscale(0%) contrast(1.03) brightness(1.0) saturate(1.06);
+                transform: scale(1.018);
+                border-color: rgba(0,0,0,.26);
+            }
+
             footer { display: block; }
             footer .meta-label + .meta-label { margin-top: 10px; }
         }
@@ -512,7 +646,7 @@
                                         <p class="chron-date">2011 — 2017</p>
                                         <p class="chron-role">Ph.D. Mechanical Engineering</p>
                                         <p class="chron-place">Ben-Gurion University · highest honors</p>
-                                        <div class="chron-tags"><span>shock waves</span><span>PRL</span><span>PNAS</span></div>
+                                        <div class="chron-tags"><span>shock waves</span><span>JFM publications</span><span>analytical modeling</span></div>
                                     </div></div>
                                 </div>
 
@@ -523,7 +657,7 @@
                                         <p class="chron-date">2020 — 2024</p>
                                         <p class="chron-role">Postdoc &amp; Head of Research Lab</p>
                                         <p class="chron-place">Tel Aviv University</p>
-                                        <div class="chron-tags"><span>turbulence</span><span>wind–wave coupling</span><span>Alon Fellowship</span><span>leadership</span></div>
+                                        <div class="chron-tags"><span>turbulence</span><span>wind–wave coupling</span><span>PRL / PNAS publications</span><span>Alon Fellowship</span><span>leadership</span></div>
                                     </div></div>
                                 </div>
 
@@ -582,11 +716,14 @@
                             <div class="meta-label" style="opacity: 0.5;">Speculative Clinical Service</div>
                         </div>
                         <div class="project-content">
-                            <p>ProxyBond is a fictional parenting-training service based on a living neural proxy. It exposes the paradox of modern parenting: parents are increasingly expected to prevent emotional, cognitive, and developmental harm, while the child remains a nonlinear biological person shaped by genetics, temperament, environment, chance, intergenerational patterns, and their own agency.</p>
-                            <p>The service promises preparation before harm occurs. Parents rehearse responses, test decisions, and receive feedback on emotional regulation, readiness, and developmental risk. But there is no final training for parenting. Even a proxy generated from the parent’s biological material remains unpredictable, turning preparation into repetition: more training, more measurement, and more guilt.</p>
-                            <p>ProxyBond functions as a pharmakon: remedy and poison at once. It appears to offer reassurance and clinical support, while revealing how the desire to prepare better can become a mechanism of control, scoring, responsibility, and blame.</p>
+                           <p>
+A fictional parenting-training service based on a living neural proxy. It exposes the paradox of modern parenting: the attempt to prevent harm before it happens, while the child remains biological, nonlinear, and unknowable.
+</p>
+
+<p>
+The project synthesizes neuroscience, developmental psychology, and neuromorphic computing to decode the proxy as a stage-specific model of the child’s brain. Future parents rehearse conflicts, receive feedback, and see how repeated responses accumulate into developmental risk. In the installation, visitors bond with a live proxy through facial mimicry and touch, then enter a conflict scenario. </p>
                             <div>
-                                <span class="tech-tag">Speculative Design</span><span class="tech-tag">Living Neural Proxy</span><span class="tech-tag">Parenting Systems</span><span class="tech-tag">Clinical Interface</span><span class="tech-tag">Emotional Regulation</span>
+                                <span class="tech-tag">Speculative Design</span><span class="tech-tag">Critical Design</span><span class="tech-tag">Bio-Human Interaction</span><span class="tech-tag">Real-Time Interface</span>
                             </div>
                         </div>
                     </div>
@@ -634,6 +771,9 @@
                             <div>
                                 <span class="tech-tag">Affective Computing</span><span class="tech-tag">MediaPipe</span><span class="tech-tag">Hardware Control</span>
                             </div>
+                            <a class="project-link" href="https://meitals112.github.io/nrts-2026/" target="_blank" rel="noopener noreferrer">
+                            LIVE SITE ↗
+                            </a>
                         </div>
                     </div>
 
@@ -692,7 +832,7 @@
                         <div class="project-content">
                             <p>A visual system for scent that refuses to simplify smell, making its hidden chemical-perceptual structure legible. Treating scent as a high-dimensional signal, the project builds chemical-perceptual fingerprints to expose unexpected proximities. Its uniqueness is the refusal to flatten human perception into labels, offering a way to view invisible complexity without pretending it is simple.</p>
                             <div>
-                                <span class="tech-tag">Python</span><span class="tech-tag">Molecular Descriptors</span><span class="tech-tag">UMAP/t-SNE</span>
+                                <span class="tech-tag">Machine Learning</span><span class="tech-tag">Olfactory Encoding</span><span class="tech-tag">Chemical Fingerprints</span><span class="tech-tag">Dimensional Mapping</span>
                             </div>
                         </div>
                     </div>
@@ -792,9 +932,9 @@
                             <div class="meta-label" style="opacity: 0.5;">Wind-Wave Feedback</div>
                         </div>
                         <div class="project-content">
-                            <p>A study of wind and waves as a feedback system where apparent chaos hides organized structure. Using high-frequency sensor data, the work extracted structure from noisy measurements, revealing the organized exchange of momentum and energy inside a stochastic wind-water interface.</p>
+                            <p>A study of wind and waves as a coupled feedback system, where chaotic motion becomes measurable signal. Using high-frequency sensor data, the work extracted structure from noisy measurements, revealing the organized exchange of momentum and energy inside a stochastic wind-water interface.</p>
                             <div>
-                                <span class="tech-tag">X-film Anemometry</span><span class="tech-tag">MATLAB Signal Processing</span><span class="tech-tag">Machine-Learning</span>
+                                <span class="tech-tag">X-film Anemometry</span><span class="tech-tag">MATLAB Signal Processing</span><span class="tech-tag">Sensor-data fusion</span><span class="tech-tag">Data-driven physical inference</span>
                             </div>
                         </div>
                     </div>
@@ -806,9 +946,9 @@
                             <div class="meta-label" style="opacity: 0.5;">Supersonic Flows</div>
                         </div>
                         <div class="project-content">
-                            <p>A body of research exposing hidden order inside unsteady shock-wave reflections. Shock patterns can appear abrupt and unstable, but this project combines theory, experiment, and automated visual analysis to decode their dynamic nonlinear systems and topological changes.</p>
+                            <p>A body of research developing analytical models to track how shock structures evolve across space and time. Shock patterns can appear abrupt and unstable, but this project combines theory, experiment, and automated visual analysis to decode their dynamic nonlinear systems and topological changes.</p>
                             <div>
-                                <span class="tech-tag">Shock-tube Experiments</span><span class="tech-tag">Euler Equations</span><span class="tech-tag">Fluent Simulations</span>
+                                <span class="tech-tag">Image processing</span><span class="tech-tag">Nonlinear dynamical systems</span><span class="tech-tag">Euler Equations</span><span class="tech-tag">Fluent Simulations</span>
                             </div>
                         </div>
                     </div>
@@ -850,6 +990,27 @@
             var strip = scope.querySelector('.chron');
             if (strip) strip.addEventListener('mouseleave', function(){ nodes.forEach(function(x){ x.classList.remove('is-open'); }); });
         })();
+
+        // MOBILE PROJECT IMAGE COLOR ON SCROLL
+        (function () {
+            const items = document.querySelectorAll('.project-item');
+            if (!items.length) return;
+
+            const projectObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-inview');
+                    } else {
+                        entry.target.classList.remove('is-inview');
+                    }
+                });
+            }, {
+                threshold: 0.45
+            });
+
+            items.forEach(item => projectObserver.observe(item));
+        })();
+
         // 3. HERO DOT GRID FIELD
         (function () {
             const canvas = document.getElementById('heroDotCanvas');
