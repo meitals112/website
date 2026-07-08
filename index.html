@@ -156,6 +156,15 @@
 
         .reveal-element.visible { filter: blur(0); opacity: 1; transform: translateY(0); }
 
+        /* WORK SECTION: keep projects immediately visible on desktop and mobile */
+        #work .reveal-element {
+            filter: none;
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+
+
         #hero {
             min-height: 100vh;
             isolation: isolate;
@@ -543,6 +552,25 @@
 
             .chron-node:last-child .chron-tags {
                 justify-content: flex-start;
+            }
+
+            /* MOBILE FIX: only Present pulse + align pulse to dot */
+            .chron-node.is-open .chron-ping,
+            .chron-node:hover .chron-ping {
+                opacity: 0;
+                animation: none;
+            }
+
+            .chron-ping {
+                left: 50%;
+                margin-left: -11.5px;
+            }
+
+            .chron-node.chron-present .chron-ping,
+            .chron-node.chron-present.is-open .chron-ping,
+            .chron-node.chron-present:hover .chron-ping {
+                opacity: .12;
+                animation: chron-ping 2.6s ease-out infinite;
             }
 
             /* MOBILE FIX: image becomes color when project block is in view */
