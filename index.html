@@ -529,7 +529,7 @@
             .chron-node:hover .chron-pop,
             .chron-node.chron-present .chron-pop {
                 opacity: 1;
-                max-height: 260px;
+                max-height: 340px;
                 pointer-events: auto;
             }
 
@@ -572,6 +572,28 @@
             .chron-node.chron-present:hover .chron-ping {
                 opacity: .12 !important;
                 animation: chron-ping 2.6s ease-out infinite !important;
+            }
+
+            /* MOBILE FIX: passive CV state only opens the scroll-active node */
+            .chron-node.chron-present .chron-pop {
+                opacity: 0;
+                max-height: 0;
+                pointer-events: none;
+            }
+
+            .chron-node.is-open .chron-pop,
+            .chron-node.chron-present.is-open .chron-pop {
+                opacity: 1;
+                max-height: 340px;
+                pointer-events: auto;
+            }
+
+            /* MOBILE FIX: keep hero signal field above the paragraph text */
+            .hero-dot-canvas {
+                top: 0;
+                bottom: auto;
+                height: 48%;
+                opacity: 1;
             }
 
             /* MOBILE FIX: image becomes color when project block is in view */
@@ -631,7 +653,7 @@
             <div class="reveal-element about-layout">
                 <div class="about-text-container">
                     <img src="assets/meital-portrait.png" alt="Meital Geva" class="profile-img">
-                    <p>I am a scientist, theoretician, and designer who uses the rigorous tools of advanced engineering to map, challenge, and amplify the human experience. Holding a Ph.D. in Mechanical Engineering, I have spent over a decade tracking instability regimes, from managing a university dynamic laboratory to engineering bio-hybrid intelligence loops as an intern in the DLX Design Lab in Tokyo. Today, my practice bridges hard science and deeply human-centered design. I treat algorithms, non-linear mathematics, and biological networks not just as technical tools, but as critical materials to decode human behavior.</p>
+                    <p>I am a scientist, theoretician, and designer who uses the rigorous tools of advanced engineering to map, challange, and amplify the human experience. Holding a Ph.D. in Mechanical Engineering, I have spent over a decade tracking instability regimes, from managing a university dynamic laboratory to engineering bio-hybrid intelligence loops as an intern in the DLX Design Lab in Tokyo. Today, my practice bridges hard science and deeply human-centered design. I treat algorithms, non-linear mathematics, and biological networks not just as technical tools, but as critical materials to decode human behavior.</p>
                     <p class="about-statement"> I build physical pipelines, interactive interfaces, and installations that intercept the invisible systemic frameworks constraining us. My work exists to reveal the raw friction of how we connect, feel, and survive inside algorithmic and institutional conditions.</p>
                 </div>
 
@@ -1014,24 +1036,62 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
             if (!scope) return;
 
             var nodes = Array.prototype.slice.call(scope.querySelectorAll('.chron-node'));
-            var isMobile = window.matchMedia('(max-width: 900px)').matches;
+            var mobileQuery = window.matchMedia('(max-width: 900px)');
 
-            function open(n) {
+            function clearOpen() {
                 nodes.forEach(function (x) { x.classList.remove('is-open'); });
-                n.classList.add('is-open');
             }
 
-            if (isMobile) {
-                var chronObserver = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        if (entry.isIntersecting) open(entry.target);
-                    });
-                }, {
-                    root: null,
-                    threshold: 0.55
+            function open(n) {
+                clearOpen();
+                if (n) n.classList.add('is-open');
+            }
+
+            function getMobileActiveNode() {
+                var headerOffset = 92;
+                var activationTop = headerOffset + 56;
+                var activationBottom = window.innerHeight * 0.78;
+                var best = null;
+                var bestTop = Infinity;
+
+                nodes.forEach(function (node) {
+                    var rect = node.getBoundingClientRect();
+
+                    // Close a node only after it has clearly passed the header zone.
+                    if (rect.bottom <= activationTop) return;
+
+                    // Open the next node earlier, before it reaches the top of the screen.
+                    if (rect.top >= activationBottom) return;
+
+                    if (rect.top < bestTop) {
+                        bestTop = rect.top;
+                        best = node;
+                    }
                 });
 
-                nodes.forEach(function (n) { chronObserver.observe(n); });
+                return best;
+            }
+
+            function updateMobileOpen() {
+                if (!mobileQuery.matches) return;
+                open(getMobileActiveNode());
+            }
+
+            if (mobileQuery.matches) {
+                var ticking = false;
+
+                function requestMobileUpdate() {
+                    if (ticking) return;
+                    ticking = true;
+                    window.requestAnimationFrame(function () {
+                        updateMobileOpen();
+                        ticking = false;
+                    });
+                }
+
+                window.addEventListener('scroll', requestMobileUpdate, { passive: true });
+                window.addEventListener('resize', requestMobileUpdate, { passive: true });
+                requestMobileUpdate();
                 return;
             }
 
@@ -1043,9 +1103,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
 
             var strip = scope.querySelector('.chron');
             if (strip) {
-                strip.addEventListener('mouseleave', function () {
-                    nodes.forEach(function (x) { x.classList.remove('is-open'); });
-                });
+                strip.addEventListener('mouseleave', function () { clearOpen(); });
             }
         })();
 
@@ -1127,7 +1185,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                 const panelRect = panel.getBoundingClientRect();
                 const copyRect = copy.getBoundingClientRect();
                 const mobileHero = window.matchMedia('(max-width: 900px)').matches;
-                clipLeft = mobileHero ? width * 0.50 : Math.max(copyRect.right - panelRect.left + 28, width * 0.56);
+                clipLeft = mobileHero ? width * 0.18 : Math.max(copyRect.right - panelRect.left + 28, width * 0.56);
 
                 for (let row = 0; row < cfg.rows; row++) {
                     for (let col = 0; col < cfg.cols; col++) {
@@ -1179,12 +1237,15 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
 
             function resizeHeroCanvas() {
                 const rect = panel.getBoundingClientRect();
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 width = Math.max(1, rect.width);
-                height = Math.max(1, rect.height);
+                height = Math.max(1, mobileHero ? rect.height * 0.48 : rect.height);
                 canvas.width = Math.round(width * dpr);
                 canvas.height = Math.round(height * dpr);
                 canvas.style.width = width + 'px';
                 canvas.style.height = height + 'px';
+                canvas.style.top = '0px';
+                canvas.style.bottom = mobileHero ? 'auto' : '0px';
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 buildGrid();
                 initHub(performance.now());
