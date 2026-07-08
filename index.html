@@ -588,7 +588,11 @@
                 pointer-events: auto;
             }
 
-            /* MOBILE FIX: keep hero signal field above the paragraph text */
+            /* MOBILE FIX: keep hero signal field visible */
+            .hero-copy {
+                background: linear-gradient(180deg, rgba(251,251,248,.62) 0%, rgba(251,251,248,.44) 58%, rgba(251,251,248,.12) 100%);
+            }
+
             .hero-dot-canvas {
                 top: 0;
                 bottom: auto;
@@ -1391,7 +1395,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                 const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 ctx.fillStyle = 'rgba(10,10,9,.19)';
                 for (const p of grid) {
-                    ctx.globalAlpha = mobileHero ? (p.x < clipLeft ? 0.34 : 0.64) : (p.x < clipLeft ? 0.20 : 0.34);
+                    ctx.globalAlpha = mobileHero ? (p.x < clipLeft ? 0.48 : 0.76) : (p.x < clipLeft ? 0.34 : 0.58);
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, cfg.baseRadius, 0, Math.PI * 2);
                     ctx.fill();
@@ -1407,15 +1411,15 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                     const x = burst.originX + (target.x - burst.originX) * state.drawP;
                     const y = burst.originY + (target.y - burst.originY) * state.drawP;
                     ctx.strokeStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = mobileHero ? (0.24 + state.alpha * 0.58) : (0.10 + state.alpha * 0.34);
-                    ctx.lineWidth = cfg.lineWidth;
+                    ctx.globalAlpha = mobileHero ? (0.36 + state.alpha * 0.52) : (0.20 + state.alpha * 0.55);
+                    ctx.lineWidth = mobileHero ? 1.28 : cfg.lineWidth;
                     ctx.beginPath();
                     ctx.moveTo(burst.originX, burst.originY);
                     ctx.lineTo(x, y);
                     ctx.stroke();
                     const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
                     ctx.fillStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = mobileHero ? (0.32 + state.alpha * 0.62) : (0.16 + state.alpha * 0.44);
+                    ctx.globalAlpha = mobileHero ? (0.42 + state.alpha * 0.48) : (0.28 + state.alpha * 0.62);
                     ctx.beginPath();
                     ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
                     ctx.fill();
@@ -1429,15 +1433,16 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                     if (!state) continue;
                     const target = grid[link.idx];
                     ctx.strokeStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = mobileHero ? (0.20 + state.alpha * 0.56) : (0.08 + state.alpha * 0.34);
+                    ctx.globalAlpha = mobileHero ? (0.34 + state.alpha * 0.50) : (0.18 + state.alpha * 0.36);
                     ctx.lineWidth = cfg.lineWidth;
+                    ctx.lineWidth = mobileHero ? 1.28 : cfg.lineWidth;
                     ctx.beginPath();
                     ctx.moveTo(hub.x, hub.y);
                     ctx.lineTo(target.x, target.y);
                     ctx.stroke();
                     const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
                     ctx.fillStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = mobileHero ? (0.28 + state.alpha * 0.58) : (0.14 + state.alpha * 0.36);
+                    ctx.globalAlpha = mobileHero ? (0.40 + state.alpha * 0.48) : (0.26 + state.alpha * 0.58);
                     ctx.beginPath();
                     ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
                     ctx.fill();
@@ -1450,14 +1455,14 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                 const pulse = moving ? 0.985 : 0.97 + Math.sin(now * cfg.pulseSpeed) * 0.035;
                 const haloRadius = cfg.hubRadius * (moving ? 2.15 : 2.9);
                 const halo = ctx.createRadialGradient(hub.x, hub.y, 0, hub.x, hub.y, haloRadius);
-                halo.addColorStop(0, mobileHero ? 'rgba(10,10,9,.20)' : 'rgba(10,10,9,.10)');
+                halo.addColorStop(0, mobileHero ? 'rgba(10,10,9,.26)' : 'rgba(10,10,9,.10)');
                 halo.addColorStop(1, 'rgba(10,10,9,0)');
                 ctx.fillStyle = halo;
                 ctx.globalAlpha = 1;
                 ctx.beginPath();
                 ctx.arc(hub.x, hub.y, haloRadius * pulse, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.fillStyle = mobileHero ? 'rgba(10,10,9,.76)' : 'rgba(10,10,9,.58)';
+                ctx.fillStyle = mobileHero ? 'rgba(10,10,9,.82)' : 'rgba(10,10,9,.58)';
                 ctx.beginPath();
                 ctx.arc(hub.x, hub.y, cfg.hubRadius * pulse, 0, Math.PI * 2);
                 ctx.fill();
