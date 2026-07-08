@@ -431,7 +431,7 @@
             section { padding: 106px 0; }
             .hero-panel { min-height: 78vh; }
             .hero-copy { width: 100%; min-height: 78vh; padding: 34px 22px 36px 0; background: linear-gradient(180deg, rgba(251,251,248,.94) 0%, rgba(251,251,248,.86) 58%, rgba(251,251,248,.42) 100%); }
-            .hero-dot-canvas { opacity: .72; }
+            .hero-dot-canvas { opacity: 1; }
             .hero-title {
                        font-family: "Helvetica Neue Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
                        font-weight: 400;
@@ -554,23 +554,24 @@
                 justify-content: flex-start;
             }
 
-            /* MOBILE FIX: only Present pulse + align pulse to dot */
+            /* MOBILE FIX: only Present pulse + align pulse to the actual dot */
+            .chron-ping,
             .chron-node.is-open .chron-ping,
             .chron-node:hover .chron-ping {
-                opacity: 0;
-                animation: none;
-            }
-
-            .chron-ping {
                 left: 50%;
+                top: 50%;
                 margin-left: -11.5px;
+                margin-top: -11.5px;
+                transform-origin: center center;
+                opacity: 0 !important;
+                animation: none !important;
             }
 
             .chron-node.chron-present .chron-ping,
             .chron-node.chron-present.is-open .chron-ping,
             .chron-node.chron-present:hover .chron-ping {
-                opacity: .12;
-                animation: chron-ping 2.6s ease-out infinite;
+                opacity: .12 !important;
+                animation: chron-ping 2.6s ease-out infinite !important;
             }
 
             /* MOBILE FIX: image becomes color when project block is in view */
@@ -696,7 +697,7 @@
                                         <p class="chron-date">2024 — 2026</p>
                                         <p class="chron-role">M.Des. Industrial Design</p>
                                         <p class="chron-place">Bezalel Academy</p>
-                                        <div class="chron-tags"><span>interaction</span><span>sensory</span><span>speculative</span></div>
+                                        <div class="chron-tags"><span>Speculative design</span><span>sensory</span><span>interactive systems</span><span>real-time feedback</span></div>
                                     </div></div>
                                 </div>
 
@@ -765,7 +766,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                         <div class="project-content">
                             <p>A living neural communication system that asks whether two brain organoids can begin to speak. Moving beyond simple correlation, the project reveals neural interaction as a layered process of noise reduction, synchrony, and temporary gating, attempting to decode the structure of emergent, directed dialogue.</p>
                             <div>
-                                <span class="tech-tag">20kHz Electrophysiology</span><span class="tech-tag">Causal Inference</span><span class="tech-tag">Brain Organoids</span>
+                                <span class="tech-tag">Information theory</span><span class="tech-tag">Causal Inference</span><span class="tech-tag">Signal processing</span><span class="tech-tag">Closed-loop electrophysiology,</span><span class="tech-tag">Brain Organoids</span>
                             </div>
                         </div>
                     </div>
@@ -1005,18 +1006,47 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
         }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
         revealElements.forEach(el => revealObserver.observe(el));
 
-        // 2. CHRONOLOGY HOVER MECHANICS
+        // 2. CHRONOLOGY MECHANICS
+        // Desktop: hover/click inspection.
+        // Mobile: passive scroll inspection.
         (function () {
             var scope = document.getElementById('chronology');
+            if (!scope) return;
+
             var nodes = Array.prototype.slice.call(scope.querySelectorAll('.chron-node'));
-            function open(n){ nodes.forEach(function(x){ x.classList.remove('is-open'); }); n.classList.add('is-open'); }
-            nodes.forEach(function(n){
-                n.addEventListener('mouseenter', function(){ open(n); });
-                n.addEventListener('click', function(){ open(n); });
-                n.addEventListener('focusin', function(){ open(n); });
+            var isMobile = window.matchMedia('(max-width: 900px)').matches;
+
+            function open(n) {
+                nodes.forEach(function (x) { x.classList.remove('is-open'); });
+                n.classList.add('is-open');
+            }
+
+            if (isMobile) {
+                var chronObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) open(entry.target);
+                    });
+                }, {
+                    root: null,
+                    threshold: 0.55
+                });
+
+                nodes.forEach(function (n) { chronObserver.observe(n); });
+                return;
+            }
+
+            nodes.forEach(function (n) {
+                n.addEventListener('mouseenter', function () { open(n); });
+                n.addEventListener('click', function () { open(n); });
+                n.addEventListener('focusin', function () { open(n); });
             });
+
             var strip = scope.querySelector('.chron');
-            if (strip) strip.addEventListener('mouseleave', function(){ nodes.forEach(function(x){ x.classList.remove('is-open'); }); });
+            if (strip) {
+                strip.addEventListener('mouseleave', function () {
+                    nodes.forEach(function (x) { x.classList.remove('is-open'); });
+                });
+            }
         })();
 
         // MOBILE PROJECT IMAGE COLOR ON SCROLL
@@ -1297,9 +1327,10 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
             }
 
             function drawBaseGrid() {
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 ctx.fillStyle = 'rgba(10,10,9,.19)';
                 for (const p of grid) {
-                    ctx.globalAlpha = p.x < clipLeft ? 0.20 : 0.34;
+                    ctx.globalAlpha = mobileHero ? (p.x < clipLeft ? 0.34 : 0.64) : (p.x < clipLeft ? 0.20 : 0.34);
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, cfg.baseRadius, 0, Math.PI * 2);
                     ctx.fill();
@@ -1307,6 +1338,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
             }
 
             function drawBursts(now) {
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 for (const burst of bursts) {
                     const state = burstState(burst, now);
                     if (!state) continue;
@@ -1314,7 +1346,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                     const x = burst.originX + (target.x - burst.originX) * state.drawP;
                     const y = burst.originY + (target.y - burst.originY) * state.drawP;
                     ctx.strokeStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = 0.10 + state.alpha * 0.34;
+                    ctx.globalAlpha = mobileHero ? (0.24 + state.alpha * 0.58) : (0.10 + state.alpha * 0.34);
                     ctx.lineWidth = cfg.lineWidth;
                     ctx.beginPath();
                     ctx.moveTo(burst.originX, burst.originY);
@@ -1322,7 +1354,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                     ctx.stroke();
                     const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
                     ctx.fillStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = 0.16 + state.alpha * 0.44;
+                    ctx.globalAlpha = mobileHero ? (0.32 + state.alpha * 0.62) : (0.16 + state.alpha * 0.44);
                     ctx.beginPath();
                     ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
                     ctx.fill();
@@ -1330,12 +1362,13 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
             }
 
             function drawMovingLinks(now) {
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 for (const link of movingLinks) {
                     const state = movingLinkState(link, now);
                     if (!state) continue;
                     const target = grid[link.idx];
                     ctx.strokeStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = 0.08 + state.alpha * 0.34;
+                    ctx.globalAlpha = mobileHero ? (0.20 + state.alpha * 0.56) : (0.08 + state.alpha * 0.34);
                     ctx.lineWidth = cfg.lineWidth;
                     ctx.beginPath();
                     ctx.moveTo(hub.x, hub.y);
@@ -1343,7 +1376,7 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
                     ctx.stroke();
                     const r = cfg.baseRadius + (cfg.activeRadius - cfg.baseRadius) * state.dotScale;
                     ctx.fillStyle = 'rgba(10,10,9,1)';
-                    ctx.globalAlpha = 0.14 + state.alpha * 0.36;
+                    ctx.globalAlpha = mobileHero ? (0.28 + state.alpha * 0.58) : (0.14 + state.alpha * 0.36);
                     ctx.beginPath();
                     ctx.arc(target.x, target.y, r, 0, Math.PI * 2);
                     ctx.fill();
@@ -1351,18 +1384,19 @@ The project synthesizes neuroscience, developmental psychology, and neuromorphic
             }
 
             function drawHub(now) {
+                const mobileHero = window.matchMedia('(max-width: 900px)').matches;
                 const moving = hub.phase === 'move';
                 const pulse = moving ? 0.985 : 0.97 + Math.sin(now * cfg.pulseSpeed) * 0.035;
                 const haloRadius = cfg.hubRadius * (moving ? 2.15 : 2.9);
                 const halo = ctx.createRadialGradient(hub.x, hub.y, 0, hub.x, hub.y, haloRadius);
-                halo.addColorStop(0, 'rgba(10,10,9,.10)');
+                halo.addColorStop(0, mobileHero ? 'rgba(10,10,9,.20)' : 'rgba(10,10,9,.10)');
                 halo.addColorStop(1, 'rgba(10,10,9,0)');
                 ctx.fillStyle = halo;
                 ctx.globalAlpha = 1;
                 ctx.beginPath();
                 ctx.arc(hub.x, hub.y, haloRadius * pulse, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.fillStyle = 'rgba(10,10,9,.58)';
+                ctx.fillStyle = mobileHero ? 'rgba(10,10,9,.76)' : 'rgba(10,10,9,.58)';
                 ctx.beginPath();
                 ctx.arc(hub.x, hub.y, cfg.hubRadius * pulse, 0, Math.PI * 2);
                 ctx.fill();
