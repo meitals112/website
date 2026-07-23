@@ -416,29 +416,3 @@ a {
 
 
 }
-    .poster-preview {
-    display: block;
-    width: 220px;
-    margin-top: 28px;
-    text-decoration: none;
-}
-
-.poster-preview img {
-    width: 100%;
-    border: 1px solid var(--line);
-}
-
-.poster-preview span {
-    display: block;
-    margin-top: 8px;
-    font-family: Inter, Arial, sans-serif;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-}
-
-@media (max-width: 520px) {
-    .poster-preview {
-        width: 160px;
-    }
-}
